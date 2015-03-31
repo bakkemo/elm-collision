@@ -1,0 +1,15 @@
+{
+    "version": "1.0.0",
+    "summary": "Fast collision detection for convex objects",
+    "repository": "https://github.com/bakkemo/elm-collision.git",
+    "license": "BSD3",
+    "source-directories": [
+        "src"
+    ],
+    "exposed-modules": [
+        "Collision"
+    ],
+    "dependencies": {
+        "elm-lang/core": "1.0.0 <= v < 2.0.0"
+    }
+}
