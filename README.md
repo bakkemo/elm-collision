@@ -5,7 +5,7 @@ It is quite efficient, usually converging within one or two iterations.
 ## Basic Usage
 
 ```haskell
-import Collision (..)
+import Collision exposing (..)
 
 poly1 = [(-15,-10),(0,15),(12,-5)]
 poly2 = [(-9,13),(6,13),(-2,22)]
