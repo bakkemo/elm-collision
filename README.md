@@ -32,8 +32,8 @@ List of points.
 
 **example**
 ```haskell
-polySupport [(-15,-10)(0,15)(12,5)] (1,0) == (12,5)
-polySupport [(-15,-10)(0,15)(12,5)] (0,-1) == (-15,10)
+polySupport [(-15,-10),(0,15),(12,5)] (1,0) == (12,5)
+polySupport [(-15,-10),(0,15),(12,5)] (0,-1) == (-15,10)
 ```
 
 You can define your own boundary objects and corresponding support functions, perhaps to handle
