@@ -40,3 +40,7 @@ You can define your own boundary objects and corresponding support functions, pe
 circles. Look in GJK.elm in bakkemo/umwelt for just such an example. It doesn't make sense for this
 library to prescribe a boundary representation (for circles, or any OTHER object type).
 
+**N.B.**
+
+Determining if a point is inside an object is just a special case of this: (pt, (\a b -> a)) : Mink Pt is a
+perfectly valid Minkowski object.
