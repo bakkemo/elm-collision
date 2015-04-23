@@ -11,9 +11,9 @@ import Collision exposing (..)
 polySupport : List Pt -> Pt -> Pt
 polySupport list d =
     let
-        dotList = L.map (dot d) list
-        decorated = (L.map2 (,)) dotList list
-        (m, p) = L.maximum decorated -- maximum now returns a Maybe b
+        dotList = List.map (dot d) list
+        decorated = (List.map2 (,)) dotList list
+        (m, p) = List.maximum decorated -- maximum now returns a Maybe b
     in
         p
 
