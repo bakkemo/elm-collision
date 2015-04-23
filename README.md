@@ -8,6 +8,9 @@ It is quite efficient, usually converging within one or two iterations.
 import Collision exposing (..)
 
 -- this is what polySupport looked like in 0.14 code
+dot : Pt -> Pt -> Float
+dot (x1,y1) (x2,y2) = (x1*x2) + (y1*y2)
+
 polySupport : List Pt -> Pt -> Pt
 polySupport list d =
     let
