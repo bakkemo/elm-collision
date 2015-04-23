@@ -7,6 +7,17 @@ It is quite efficient, usually converging within one or two iterations.
 ```haskell
 import Collision exposing (..)
 
+-- this is what polySupport looked like in 0.14 code
+polySupport : List Pt -> Pt -> Pt
+polySupport list d =
+    let
+        dotList = L.map (dot d) list
+        decorated = (L.map2 (,)) dotList list
+        (m, p) = L.maximum decorated -- maximum now returns a Maybe b
+    in
+        p
+
+
 poly1 = [(-15,-10),(0,15),(12,-5)]
 poly2 = [(-9,13),(6,13),(-2,22)]
 collision 10 (poly1, polySupport) (poly2, polySupport) == True
@@ -22,13 +33,10 @@ type alias Pt = (Float, Float)
 type alias Mink a = (a, a -> Pt -> Pt)
 
 collision : Int -> Mink a -> Mink b -> Bool
-polySupport : List Pt -> Pt -> Pt
 ```
 **Note:** a `Mink b` is a pair of: a boundary object of type `b`, and a suppport function of type
 `f: b -> Pt -> Pt` which given a boundary object, and a direction vector (given by a Pt), produces
 a point on the boundary furthest in the direction of the vector.
-polySupport is a provided suppport function for the (most likely?) use case of polygons represented as a
-List of points.
 
 **example**
 ```haskell
