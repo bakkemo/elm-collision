@@ -19,13 +19,12 @@ polySupport list d =
         (m, p) = List.maximum decorated -- maximum now returns a Maybe b
     in
         p
-
-
+        
 poly1 = [(-15,-10),(0,15),(12,-5)]
 poly2 = [(-9,13),(6,13),(-2,22)]
 collision 10 (poly1, polySupport) (poly2, polySupport) == True
 ````
-**Note:** the first parameter is max recursion depth. It can easily be elided by defining an auxiliary helper
+**Note:** the first parameter to collision is max recursion depth. It can easily be elided by defining an auxiliary helper
 like `myCollision = collision 100`. Control over recursion depth can be useful when defining your own support
 functions.
 
