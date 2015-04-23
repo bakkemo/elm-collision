@@ -1,6 +1,5 @@
 module Collision
     ( collision
-    , polySupport
     , Mink
     , Pt
     ) where
@@ -18,16 +17,12 @@ It is very efficient, usually converging in one or two iterations.
 # API
 @docs collision
 
-# Support function
-@docs polySupport
-
 -}
-
-import List as L
---import Debug
 
 type alias Pt = (Float, Float)
 type alias Mink a = (a, (a -> Pt -> Pt))
+
+unsafeHead (h :: t) = h
 
 {-
  - utility functions on Points 
@@ -71,24 +66,6 @@ perp a b = trip a b a
 
 -- not sure this gets inlined :/
 isSameDirection a b = (dot a b) > 0
-
-{-| This support function is provided for the (probably) common
-case where your object boundary is represented as a list of points
-of the form (Float, Float). It calculates the polygon vertex furthest
-in a direction of a 2D direction vector, also of the form (Float, Float).
-
-    polySupport [(-15,-10),(0,15),(12,-5)] (1,0) == (12,-5) 
-    polySupport [(-15,-10),(0,15),(12,-5)] (0,-1) == (-15,-10) 
--}
-polySupport : List Pt -> Pt -> Pt
-polySupport list d =
-    let
-        dotList = L.map (dot d) list
-        decorated = (L.map2 (,)) dotList list
-        (m, p) = L.maximum decorated
-    in
-        p
-
 
 {-
  - calculate the support of the Minkowski difference
@@ -176,7 +153,7 @@ doSimplex limit depth minkA minkB (sim, d) =
     let
         a = (calcMinkSupport minkA minkB d)
         notPastOrig = ((dot a d) < 0)       -- if not past origin, there is no intersection
-        b = L.head sim
+        b = unsafeHead sim
         (intersects, (newSim, newDir)) = enclosesOrigin a sim
     in
        if | notPastOrig -> (False, ([], (toFloat depth,toFloat depth)))
