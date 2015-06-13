@@ -4,7 +4,7 @@ It is quite efficient, usually converging within one or two iterations.
 
 ## Basic Usage
 
-```haskell
+```elm
 import Collision exposing (..)
 
 -- this is what polySupport looked like in 0.14 code
@@ -30,7 +30,7 @@ functions.
 
 ## API
 
-```haskell
+```elm
 type alias Pt = (Float, Float)
 type alias Mink a = (a, a -> Pt -> Pt)
 
@@ -41,7 +41,7 @@ collision : Int -> Mink a -> Mink b -> Bool
 a point on the boundary furthest in the direction of the vector.
 
 **example**
-```haskell
+```elm
 polySupport [(-15,-10),(0,15),(12,5)] (1,0) == (12,5)
 polySupport [(-15,-10),(0,15),(12,5)] (0,-1) == (-15,10)
 ```
