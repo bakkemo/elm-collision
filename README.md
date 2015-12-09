@@ -4,34 +4,44 @@ It is quite efficient, usually converging within one or two iterations.
 
 ## Basic Usage
 
-```haskell
+```elm
 import Collision exposing (..)
 
+-- this is what polySupport looked like in 0.14 code
+dot : Pt -> Pt -> Float
+dot (x1,y1) (x2,y2) = (x1*x2) + (y1*y2)
+
+polySupport : List Pt -> Pt -> Pt
+polySupport list d =
+    let
+        dotList = List.map (dot d) list
+        decorated = (List.map2 (,)) dotList list
+        (m, p) = List.maximum decorated -- maximum now returns a Maybe b
+    in
+        p
+        
 poly1 = [(-15,-10),(0,15),(12,-5)]
 poly2 = [(-9,13),(6,13),(-2,22)]
 collision 10 (poly1, polySupport) (poly2, polySupport) == True
 ````
-**Note:** the first parameter is max recursion depth. It can easily be elided by defining an auxiliary helper
+**Note:** the first parameter to collision is max recursion depth. It can easily be elided by defining an auxiliary helper
 like `myCollision = collision 100`. Control over recursion depth can be useful when defining your own support
 functions.
 
 ## API
 
-```haskell
+```elm
 type alias Pt = (Float, Float)
 type alias Mink a = (a, a -> Pt -> Pt)
 
 collision : Int -> Mink a -> Mink b -> Bool
-polySupport : List Pt -> Pt -> Pt
 ```
 **Note:** a `Mink b` is a pair of: a boundary object of type `b`, and a suppport function of type
 `f: b -> Pt -> Pt` which given a boundary object, and a direction vector (given by a Pt), produces
 a point on the boundary furthest in the direction of the vector.
-polySupport is a provided suppport function for the (most likely?) use case of polygons represented as a
-List of points.
 
 **example**
-```haskell
+```elm
 polySupport [(-15,-10),(0,15),(12,5)] (1,0) == (12,5)
 polySupport [(-15,-10),(0,15),(12,5)] (0,-1) == (-15,10)
 ```
