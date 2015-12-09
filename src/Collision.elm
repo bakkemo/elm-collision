@@ -22,7 +22,6 @@ It is very efficient, usually converging in one or two iterations.
 type alias Pt = (Float, Float)
 type alias Mink a = (a, (a -> Pt -> Pt))
 
-unsafeHead (h :: t) = h
 
 {-
  - utility functions on Points 
@@ -153,13 +152,17 @@ doSimplex limit depth minkA minkB (sim, d) =
     let
         a = (calcMinkSupport minkA minkB d)
         notPastOrig = ((dot a d) < 0)       -- if not past origin, there is no intersection
-        b = unsafeHead sim
+        --b = unsafeHead sim
         (intersects, (newSim, newDir)) = enclosesOrigin a sim
     in
-       if | notPastOrig -> (False, ([], (toFloat depth,toFloat depth)))
-          | intersects -> (True, (sim, a))
-          | (depth > limit) -> (False, (newSim, newDir)) 
-          | otherwise -> doSimplex limit (depth+1) minkA minkB (newSim, newDir)
+        if notPastOrig then 
+            (False, ([], (toFloat depth,toFloat depth)))
+        else if intersects then 
+            (True, (sim, a))
+        else if (depth > limit) then 
+            (False, (newSim, newDir)) 
+        else 
+            doSimplex limit (depth+1) minkA minkB (newSim, newDir)
 
 
 {-
@@ -173,7 +176,7 @@ enclosesOrigin a sim =
     case sim of
         b :: []         -> handle0Simplex a b      -- 0-simplex case
         b :: c :: []    -> handle1Simplex a b c
-       -- _               -> Debug.log "Impossible simplex" (False, (sim,(0,0)))
+        _               -> (False, (sim,(0,0)))
 
 
 {-
@@ -202,11 +205,12 @@ handle1Simplex a b c =
         abp = perp ab (neg ac) -- perpendicular to ab facing away from c
         acp = perp ac (neg ab) -- perpendicular to ac facing away from a
     in
-        if  | (isSameDirection abp a0) -> -- region 4 or 5
-                if (isSameDirection ab a0) then (False, ([a,b], abp)) else (False, ([a], a0))
-            | (isSameDirection acp a0) -> -- region 6 or 5
-                if (isSameDirection ac a0) then (False, ([a,c], acp)) else (False, ([a], a0)) 
-            | otherwise -> (True, ([b,c], a0)) 
+        if (isSameDirection abp a0) then -- region 4 or 5
+            if (isSameDirection ab a0) then (False, ([a,b], abp)) else (False, ([a], a0))
+        else if (isSameDirection acp a0) then -- region 6 or 5
+            if (isSameDirection ac a0) then (False, ([a,c], acp)) else (False, ([a], a0)) 
+        else 
+            (True, ([b,c], a0)) 
 
 
 
