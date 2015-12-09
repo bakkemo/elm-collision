@@ -14,12 +14,19 @@ It is very efficient, usually converging in one or two iterations.
 # Definitions
 @docs Pt, Mink
 
+
 # API
 @docs collision
 
 -}
 
+{-| Simple alias for a two dimentional point
+-}
 type alias Pt = (Float, Float)
+
+
+{-| Simple alias for boundary objects bundled with a support function
+-}
 type alias Mink a = (a, (a -> Pt -> Pt))
 
 
