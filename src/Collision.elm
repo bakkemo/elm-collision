@@ -27,7 +27,7 @@ type alias Pt = (Float, Float)
 
 {-| Simple alias for boundary objects bundled with a support function
 -}
-type alias Mink a = (a, (a -> Pt -> Pt))
+type alias Mink a = (a, (a -> Pt -> Maybe Pt))
 
 
 {-
@@ -75,16 +75,17 @@ isSameDirection a b = (dot a b) > 0
 
 {-
  - calculate the support of the Minkowski difference
- - of two Mink's 
+ - of two Mink's
  -}
-calcMinkSupport : Mink a -> Mink b -> (Float, Float) -> (Float,Float) 
+calcMinkSupport : Mink a -> Mink b -> (Float, Float) -> Maybe (Float, Float) 
 calcMinkSupport (objA, suppA) (objB, suppB) d =
     let
-        p1 = suppA objA (neg d)
-        p2 = suppB objB d
+        maybep1 = suppA objA (neg d)
+        maybep2 = suppB objB d
      in
-        sub p1 p2
-
+        case (maybep1, maybep2) of
+          (Just p1, Just p2) -> Just (sub p1 p2)
+          _ -> Nothing
 
 -- pass bc as first parameter
 getDirectionVector : Pt -> Pt -> Pt
@@ -121,24 +122,35 @@ the case where you are writing your own support functions.
     poly1 = [(-15,-10),(0,15),(12,-5)] 
     poly2 = [(-9,13),(6,13),(-2,22)] 
 
-    collision 10 (poly1, polySupport) (poly2, polySupport) == True
+    collision 10 (poly1, polySupport) (poly2, polySupport) == Just True
 -}
-collision : Int -> Mink a -> Mink b -> Bool
+collision : Int -> Mink a -> Mink b -> Maybe Bool
 collision limit minkA minkB =
     let
         d1 = (1.0, 0.0)
         d2 = neg d1
-        c = calcMinkSupport minkA minkB d1 
-        b = calcMinkSupport minkA minkB d2  
+        maybec = calcMinkSupport minkA minkB d1
+        maybeb = calcMinkSupport minkA minkB d2
+    in
+       case (maybec, maybeb) of
+         (Just c, Just b) -> collision2 limit minkA minkB c b
+         _ -> Nothing
+
+{-
+- Prepares the input for doSimplex and starts the calculation.
+-}
+collision2 : Int -> Mink a -> Mink b -> (Float, Float) -> (Float, Float) -> Maybe Bool
+collision2 limit minkA minkB c b =
+  let
         -- simplex is cb and direction is (cb x c0 x cb)
         cb = from c b
         c0 = neg c
         d = getDirectionVector cb c0
-        (intersects, (sim, newD)) = doSimplex limit 0 minkA minkB ([b,c], d)
+        simplexResult = doSimplex limit 0 minkA minkB ([b,c], d)
     in
-        intersects
-
-
+       case simplexResult of
+         Just (intersects, _) -> Just intersects
+         _ -> Nothing
 
 {-
  - The algorithm proceeds by continually trying to surround the origin with a 2-simplex
@@ -154,20 +166,32 @@ collision limit minkA minkB =
  - to speak) a is obtained by finding the direction of the origin from the currently
  - building simplex, and finding the extremal point on the boundry in that direction.
  -}
-doSimplex : Int -> Int -> Mink a  -> Mink b -> (List Pt, Pt) -> (Bool, (List Pt, Pt)) 
+doSimplex : Int -> Int -> Mink a  -> Mink b -> (List Pt, Pt) -> Maybe (Bool, (List Pt, Pt)) 
 doSimplex limit depth minkA minkB (sim, d) =
     let
-        a = (calcMinkSupport minkA minkB d)
+        maybea = (calcMinkSupport minkA minkB d)
+    in
+       case maybea of
+         Just a -> doSimplex2 limit depth minkA minkB (sim, d) a
+         _ -> Nothing
+
+{-
+- Actual doSimplex calculation. doSimplex handles the error case of calcMinkSupport and
+- feeds a real a to doSimplex2. 
+-}
+doSimplex2 : Int -> Int -> Mink a  -> Mink b -> (List Pt, Pt) -> (Float, Float) -> Maybe (Bool, (List Pt, Pt))
+doSimplex2 limit depth minkA minkB (sim, d) a =
+    let
         notPastOrig = ((dot a d) < 0)       -- if not past origin, there is no intersection
         --b = unsafeHead sim
         (intersects, (newSim, newDir)) = enclosesOrigin a sim
     in
         if notPastOrig then 
-            (False, ([], (toFloat depth,toFloat depth)))
+            Just (False, ([], (toFloat depth,toFloat depth)))
         else if intersects then 
-            (True, (sim, a))
+            Just (True, (sim, a))
         else if (depth > limit) then 
-            (False, (newSim, newDir)) 
+            Just (False, (newSim, newDir)) 
         else 
             doSimplex limit (depth+1) minkA minkB (newSim, newDir)
 
