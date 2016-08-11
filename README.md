@@ -2,6 +2,11 @@
 This package implements the Gilbert-Johnson-Keerthi (GJK) collision detection algorithm for 2D convex objects.
 It is quite efficient, usually converging within one or two iterations.
 
+This is a fork of
+[bakkemo/elm-collision](https://github.com/bakkemo/elm-collision) by [Michael
+Bakkemo](https://github.com/bakkemo). The original package does not use Maybe's
+and feels kind of broken.
+
 ## Basic Usage
 
 ```elm
