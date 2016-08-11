@@ -7,7 +7,7 @@ It is quite efficient, usually converging within one or two iterations.
 ```elm
 import Collision exposing (..)
 
--- this is what polySupport looked like in 0.14 code
+-- Example polySupport function
 dot : Pt -> Pt -> Float
 dot (x1,y1) (x2,y2) = (x1*x2) + (y1*y2)
 
