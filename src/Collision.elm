@@ -191,7 +191,7 @@ collision : Int -> Mink a -> Mink b -> Maybe Bool
 collision limit minkA minkB =
     let
         d1 =
-            ( 1.0, 0.0 )
+            ( 1.0, -1.0 )
 
         d2 =
             neg d1
